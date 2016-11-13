@@ -1,8 +1,10 @@
+from copy import deepcopy
+
 class Tablero:
 
     def __init__(self, nombre):
         self.tablero = []
-        self.total_luces = 0
+        self.temptabs = []
         archivo = open(nombre, "r")
         for linea in archivo:
             row = []
@@ -79,19 +81,19 @@ class Tablero:
         resultos = []
         if i > 0:
             if self.tablero[i - 1][j].isnumeric():
-                coord = [i, j]
+                coord = [i - 1, j]
                 resultos.append(coord)
         if i < len(self.tablero) - 1:
             if self.tablero[i + 1][j].isnumeric():
-                coord = [i, j]
+                coord = [i + 1, j]
                 resultos.append(coord)
         if j > 0:
             if self.tablero[i][j - 1].isnumeric():
-                coord = [i, j]
+                coord = [i, j - 1]
                 resultos.append(coord)
         if j < len(self.tablero[0]) - 1:
             if self.tablero[i][j + 1].isnumeric():
-                coord = [i, j]
+                coord = [i, j + 1]
                 resultos.append(coord)
         return resultos
 
@@ -154,33 +156,42 @@ class Tablero:
                     num = int(self.tablero[i][j])
                     if len(disp) <= num:
                         for elem in disp:
-                            self.tablero[elem[0]][elem[1]] = '*'
-                            self.total_luces += 1
+                            if self.asignacion_valida(elem[0], elem[1]) == True:
+                                self.tablero[elem[0]][elem[1]] = '*'
 
-    def resolver_tablero(self, ciertos):
-        if ciertos == False:
-            templuces = t.total_luces
-            t.ciertos()
-            while t.total_luces > templuces:
-                templuces = t.total_luces
-                t.ciertos()
-            ciertos = True
+
+    def num_luces(self):
+        luces = 0
+        for i in range(len(self.tablero)):
+            for j in range(len(self.tablero[0])):
+                if self.tablero[i][j] == '*':
+                    luces += 1
+        return luces
+
+    def resolver_tablero(self):
+        temp = deepcopy(self.tablero)
+        self.temptabs.append(temp)
+        templuces = self.num_luces()
+        self.ciertos()
+        while self.num_luces() > templuces:
+            templuces = self.num_luces()
+            self.ciertos()
         if self.tablero_resuelto():
             return True
         for i in range(len(self.tablero)):
             for j in range(len(self.tablero[0])):
                 if self.esta_illuminada(i, j) == False and self.asignacion_valida(i, j) == True:
                     self.tablero[i][j] = '*'
-                    if self.resolver_tablero(ciertos):
+                    if self.resolver_tablero():
                         return True
                     else:
                         self.tablero[i][j] = '-'
-                        continue
+        self.tablero = self.temptabs.pop()
         return False
 
 
-t = Tablero('dificil.txt')
+t = Tablero('bonus.txt')
 t.print_tablero()
-t.resolver_tablero(False)
+t.resolver_tablero()
 print('-------------')
 t.print_tablero()
