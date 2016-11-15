@@ -1,11 +1,13 @@
 ################################################################################
 #####                        Funciones del Tablero                         #####
+#####                     Por Adam Kercheval, 12/11/16                     #####
 ################################################################################
 
 from copy import deepcopy
 
 class Tablero:
 
+    ## constructor ##
     def __init__(self, nombre):
         self.tablero = []
         self.temptabs = []
@@ -18,6 +20,8 @@ class Tablero:
                 row.append(elem)
             self.tablero.append(row)
 
+    ## devuelve True si celda en tablero[i][j] esta illuminada, False si no.
+    ## Nota: las celdas 'X' y con numero devuelven True
     def esta_illuminada(self, i, j):
         celda = self.tablero[i][j]
         if celda == '*':
@@ -56,6 +60,7 @@ class Tablero:
             fil -= 1
         return False
 
+    ## Devuelve True si cada celda en el tablero esta illuminada, False si no
     def tablero_completo(self):
         for i in range(len(self.tablero)):
             for j in range(len(self.tablero[0])):
@@ -63,6 +68,7 @@ class Tablero:
                     return False
         return True
 
+    ## Devuelve el numbero de ampolletas que son vecinos al celda tablero[i][j]
     def luces(self, i, j):
         celda = self.tablero[i][j]
         num = 0
@@ -81,6 +87,7 @@ class Tablero:
                     num += 1
         return num
 
+    ## devuelve una lista de celdas numericas que son vecinas a la cenda tablero[i][j]
     def junto_a_numero(self, i, j):
         resultos = []
         if i > 0:
@@ -101,6 +108,8 @@ class Tablero:
                 resultos.append(coord)
         return resultos
 
+    ## Devuelve True si poner una ampolleta en tablero[i][j] es valido segun
+    ## las reglas del juego, False si no
     def asignacion_valida(self, i, j):
         if i > len(self.tablero) - 1 or j > len(self.tablero[0]) - 1:
             return False
@@ -118,6 +127,7 @@ class Tablero:
             return True
         return False
 
+    ## Imprima el tablero en una manera legible, con filas y columnas enumerados
     def print_tablero(self):
         print("     ", end="")
         for x in range(len(self.tablero[0])):
@@ -135,6 +145,8 @@ class Tablero:
                 print(self.tablero[i][j], end=" ")
             print()
 
+    ## Devuelve True si el tablero esta totalmente illuminada y sin problemas segun
+    ## las reglas del juego, False si no
     def tablero_resuelto(self):
         if self.tablero_completo() == False:
             return False
@@ -145,6 +157,9 @@ class Tablero:
                         return False
         return True
 
+    ## Devuelve una lista de celdas que son vecinos al celda tablero[i][j] que
+    ## son disponibles - es decir, no son negros ni tienen ampolletas ni numeros,
+    ## y no estan illuminadas
     def disponibles(self, i, j):
         disp = []
         if i > 0:
@@ -165,6 +180,8 @@ class Tablero:
                 disp.append(coord)
         return disp
 
+    ## Llena el tablero con ampolletas en cada celda que seguramente tendra
+    ## ampolleta - por ejemplo, celdas que son vecinas a un '4', etc
     def ciertos(self):
         for i in range(len(self.tablero)):
             for j in range(len(self.tablero[0])):
@@ -176,6 +193,7 @@ class Tablero:
                             if self.asignacion_valida(elem[0], elem[1]) == True:
                                 self.tablero[elem[0]][elem[1]] = '*'
 
+    ## Devuelve el numero total de ampolletas en el tablero
     def num_luces(self):
         luces = 0
         for i in range(len(self.tablero)):
@@ -184,6 +202,7 @@ class Tablero:
                     luces += 1
         return luces
 
+    ## Resuelve el tablero en una manera recursiva
     def resolver_tablero(self):
         temp = deepcopy(self.tablero)
         self.temptabs.append(temp)
@@ -210,51 +229,6 @@ class Tablero:
 ################################################################################
 #####                             Juego                                    #####
 ################################################################################
-
-#def tablero_nuevo(arch):
-#    if arch == "facil.txt":
-#        archivo = open("facil.txt", 'w')
-#        archivo.write("-,-,1,-,-,-,X\n")
-#        archivo.write("-,-,-,-,-,-,-\n")
-#        archivo.write("-,-,-,3,-,-,X\n")
-#        archivo.write("-,-,X,X,3,-,-\n")
-#        archivo.write("2,-,X,X,-,-,-\n")
-#        archivo.write("-,-,-,-,-,-,-\n")
-#        archivo.write("-,-,-,-,1,-,X")
-#        archivo.close()
-#    elif arch == "medio.txt":
-#        archivo = open("medio.txt", 'w')
-#        archivo.write("-,-,-,-,-,-,-,-,-,-\n")
-#        archivo.write("-,4,-,-,X,-,-,-,2,-\n")
-#        archivo.write("-,-,X,2,-,-,-,-,X,-\n")
-#        archivo.write("-,-,-,-,X,0,-,-,X,-\n")
-#        archivo.write("-,-,-,-,-,X,-,-,X,-\n")
-#        archivo.write("-,-,-,-,-,-,-,-,-,-\n")
-#        archivo.write("-,-,-,-,1,X,-,-,X,-\n")
-#        archivo.write("-,1,-,-,-,-,-,0,X,-\n")
-#        archivo.write("-,1,-,-,-,2,-,-,X,-\n")
-#        archivo.write("-,-,-,-,-,-,-,-,-,-")
-#        archivo.close()
-#    elif arch == "dificil.txt":
-#        archivo = open("dificil.txt", 'w')
-#        archivo.write("1,-,-,-,-,-,X\n")
-#        archivo.write("-,-,2,-,-,-,-\n")
-#        archivo.write("-,-,-,-,-,2,-\n")
-#        archivo.write("-,-,-,-,-,-,-\n")
-#        archivo.write("-,3,-,-,-,-,-\n")
-#        archivo.write("-,-,-,-,0,-,-\n")
-#        archivo.write("0,-,-,-,-,-,X")
-#        archivo.close()
-#    elif arch == "bonus.txt":
-#        archivo = open("bonus.txt", 'w')
-#        archivo.write("-,-,-,-,0,-,-\n")
-#        archivo.write("-,-,X,-,-,-,-\n")
-#        archivo.write("1,-,-,X,-,2,-\n")
-#        archivo.write("-,X,3,-,X,-,-\n")
-#        archivo.write("-,3,-,X,-,-,1\n")
-#        archivo.write("-,-,-,-,1,-,-\n")
-#        archivo.write("-,-,0,-,-,-,-")
-#        archivo.close()
 
 print("***** Bienvenido a Akari *****")
 print("Que quieres hacer?")
@@ -389,11 +363,3 @@ while t.tablero_resuelto() == False:
 if resuelto_auto == False and salido == False:
     print("Felicitaciones! Completaste el tablero!")
     t.print_tablero()
-   # if nivel == '1':
-   #     tablero_nuevo("facil.txt")
-   # if nivel == '2':
-   #     tablero_nuevo("medio.txt")
-   # if nivel == '3':
-   #     tablero_nuevo("dificil.txt")
-   # if nivel == '4':
-   #     tablero_nuevo("bonus.txt")
